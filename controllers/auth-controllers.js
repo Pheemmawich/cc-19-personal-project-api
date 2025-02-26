@@ -71,10 +71,10 @@ exports.login = async (req,res,next)=>{
             return createError(401, "This email or phone number is not found")
         }
 
-        const isMatch = bcrypt.compare(password, profile.password)
+        const isMatch =await bcrypt.compare(password, profile.password)
 
         if(!isMatch){
-            return createError(401, "Invalid password")
+            return createError(401, "Incorrect password")
         }
 
         const payload = {
@@ -99,4 +99,4 @@ exports.currentUser = async(req, res, next) => {
         console.log(error);
         next(error)
     }
-} 
+}  
