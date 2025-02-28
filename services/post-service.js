@@ -1,10 +1,9 @@
 const prisma = require("../configs/prisma");
 
 exports.getRecipeById = (id) => {
-    return prisma.post.findFirst({
+    return prisma.recipe.findFirst({
         where: {
             id: Number(id),
-
         },
         include: {
             category: true,

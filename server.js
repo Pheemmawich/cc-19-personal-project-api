@@ -17,7 +17,7 @@ app.use(express.json()) // For read json
 
 // Routing 
 app.use('/api',authRouter)
-app.use('/api',userRouter)
+// app.use('/api',userRouter)
 app.use('/api', recipeRouter )
 
 // Handle errors
