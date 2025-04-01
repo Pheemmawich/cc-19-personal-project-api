@@ -7,6 +7,8 @@ const userRouter = require("./routes/user-router")
 const recipeRouter = require("./routes/recipe-router")
 const handleError = require("./middlewares/handleError")
 const notFound = require("./middlewares/notFound")
+const commentRouter = require("./routes/comment-routes")
+const likeRouter = require("./routes/like-routes")
 
 const app = express()
 
@@ -17,8 +19,10 @@ app.use(express.json()) // For read json
 
 // Routing 
 app.use('/api',authRouter)
-// app.use('/api',userRouter)
+app.use('/api',userRouter)
 app.use('/api', recipeRouter )
+app.use('/api', commentRouter )
+app.use('/api', likeRouter )
 
 // Handle errors
 app.use(handleError)

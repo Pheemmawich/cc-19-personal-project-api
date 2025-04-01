@@ -2,6 +2,9 @@ const prisma = require("../configs/prisma");
 const createError = require("../utils/createError");
 const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
+const path = require('path')
+const cloudinary = require("../configs/cloudinary")
+const fs = require('fs/promises')
 
 function checkEmailorPhone(identity) {
 	let identityKey = ''
@@ -100,3 +103,64 @@ exports.currentUser = async(req, res, next) => {
         next(error)
     }
 }  
+
+exports.updateProfile = async(req, res, next) => {
+    try {
+        const {firstname, lastname} = req.body
+        const { id } = req.user
+
+        if(!id){
+            return createError(400, "Id to be provideds")
+        }
+
+        if(!firstname){
+            return createError(401, "firstname is required")
+        }
+
+        if(!lastname){
+            return createError(401, "lastname is required")
+        }
+
+        const haveFile = !!req.file 
+        let imageFromResult = ''
+
+        if(haveFile){
+                uploadResult = await cloudinary.uploader.upload(req.file.path, {
+                    overwrite : true,
+                    public_id : path.parse(req.file.path).name,
+                })
+                console.log("uploadResult",uploadResult);
+                imageFromResult = uploadResult.secure_url
+                fs.unlink(req.file.path)
+            }
+
+        const user = await prisma.user.findUnique({
+            where:{
+                id
+            }
+        })
+
+        if(!user) {
+            return createError(400, "user not found")
+        }
+
+        if(user.id !== id){
+            return createError(403, "Forbidden");
+        }
+
+        const updatedProfile = await prisma.user.update({
+            where:{
+                id:Number(id),
+            },
+            data:{
+                firstname,
+                lastname,
+                profileImage : imageFromResult
+            }
+        })
+
+        res.json({updatedProfile})
+    } catch (error) {
+        next(error)
+    }
+}
